@@ -1,0 +1,20 @@
+---
+
+- name: INCLUDE | Debian family
+  include_tasks: debian.yml
+  when:
+    - ansible_os_family == "Debian"
+    - lvm__install
+
+- name: IMPORT | Manage VG
+  import_tasks: manage_lvm_vg.yml
+  when:
+    - lvm__install
+    - lvm__action is defined
+    - lvm__action == "add_vg" or lvm__action == "del_vg"
+
+- name: IMPORT | Apply
+  import_tasks: manage_lvm.yml
+  when:
+    - lvm__configure
+    - lvm__action|default("") == ""

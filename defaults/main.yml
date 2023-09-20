@@ -1,0 +1,12 @@
+---
+# Default do nothing
+lvm__install: False
+lvm__configure: False
+
+# defaults file for lvm
+lvm__default_packages:
+  - lvm2
+  # - scsitools
+  # - xfsprogs
+
+lvm__groups: []

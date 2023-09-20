@@ -1,0 +1,34 @@
+---
+- name: LVG | Show current LVM volume groups
+  debug: msg="Running on {{ item.vgname }} because {{ item.state }}"
+  with_items: "{{ lvm__groups }}"
+
+- name: LVG | Creating new LVM volume group
+  lvg:
+    vg: "{{ lvm_vgname }}"
+    pvs:
+      - "{{ lvm_disk }}"
+    state: present
+  with_items: "{{ lvm__groups }}"
+  when:
+    - item.state|default("present") == "present"
+    - item.vgname == lvm_vgname
+    - lvm__action == "add_vg"
+
+- name: LVG | Removing LVM volume group
+  debug: msg="You requested *** DELETION *** of volume group {{ lvm_vgname }}. Too dangerous, do it manually please."
+  with_items: "{{ lvm__groups }}"
+  when:
+    - item.state|default("present") == "present"
+    - item.vgname == lvm_vgname
+    - lvm__action == "del_vg"
+
+# - name: LVG | Removing LVM volume group
+#   lvg:
+#     vg: "{{ lvm_vgname }}"
+#     state: absent
+#   with_items: "{{ lvm__groups }}"
+#   when:
+#     - item.state|default("present") == "present"
+#     - item.vgname == lvm_vgname
+#     - lvm__action == "del_vg"

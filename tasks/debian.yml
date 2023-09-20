@@ -1,0 +1,24 @@
+---
+- name: APT | Install packages
+  apt:
+    name: "{{ lvm__default_packages }}"
+    update_cache: yes
+    state: present
+  when: lvm__install
+
+- name: COMMAND | Checking for scsi devices
+  command: sg_scan
+  register: scsi_devices
+  changed_when: false
+  when:
+    - lvm__install
+    - scsi_subsystem is defined
+
+- name: COMMAND | Rescanning for new disks added
+  command: /sbin/rescan-scsi-bus
+  changed_when: false
+  when:
+    - scsi_devices.stdout is defined
+    - scsi_devices.stdout != ""
+    - lvm__install
+    - scsi_subsystem is defined
